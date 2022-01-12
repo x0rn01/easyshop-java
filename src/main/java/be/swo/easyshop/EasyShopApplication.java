@@ -1,11 +1,11 @@
 package be.swo.easyshop;
 
-import java.util.Arrays;
-
+import be.swo.easyshop.repository.user.UserRepository;
+import be.swo.easyshop.entity.user.User;
+import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
@@ -16,17 +16,17 @@ public class EasyShopApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+    public CommandLineRunner commandLineRunner(UserRepository userDao) {
         return args -> {
 
-            System.out.println("Let's inspect the beans provided by Spring Boot:");
+            Faker faker = new Faker();
+            for (int i = 0; i < 10; i++) {
+                User user = new User();
+                user.setFirstname(faker.name().firstName());
+                user.setLastname(faker.name().lastName());
 
-            String[] beanNames = ctx.getBeanDefinitionNames();
-            Arrays.sort(beanNames);
-            for (String beanName : beanNames) {
-                System.out.println(beanName);
+                userDao.save(user);
             }
-
         };
     }
 

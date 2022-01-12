@@ -1,15 +1,18 @@
 package be.swo.easyshop.entity.user;
 
-public class User {
-    private Long id;
-    private String firstname;
-    private String lastname;
+import javax.persistence.*;
 
-    public User(Long id, String firstname, String lastname) {
-        this.id = id;
-        this.firstname = firstname;
-        this.lastname = lastname;
-    }
+@Entity(name = "user")
+@Table(name = "user")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @Column
+    private String firstname;
+    @Column
+    private String lastname;
 
     public Long getId() {
         return id;
