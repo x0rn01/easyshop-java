@@ -1,6 +1,7 @@
 package be.swo.easyshop.entity.user;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity(name = "user")
 @Table(name = "user")
@@ -37,4 +38,27 @@ public class User {
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof User))
+            return false;
+        User user = (User) o;
+        return Objects.equals(this.id, user.id) && Objects.equals(this.firstname, user.firstname)
+                && Objects.equals(this.lastname, user.lastname);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.firstname, this.lastname);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" + "id=" + this.id + ", firstName='" + this.firstname + '\'' + ", lastName='" + this.lastname
+                + '\'' + '}';
+    }
+
 }

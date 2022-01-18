@@ -3,12 +3,11 @@ package be.swo.easyshop.service.impl.user;
 import be.swo.easyshop.entity.user.User;
 import be.swo.easyshop.repository.user.UserRepository;
 import be.swo.easyshop.service.user.UserService;
+import be.swo.easyshop.utils.exceptions.UserNotFoundException;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -34,25 +33,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(String id, User user) throws EntityNotFoundException {
-        userRepository.findById(Long.valueOf(id)).ifPresentOrElse(userToBeUpdated -> {
-            userToBeUpdated.setFirstname(user.getFirstname());
-            userToBeUpdated.setLastname(user.getLastname());
-
-            userRepository.save(userToBeUpdated);
-        },  () -> new EntityNotFoundException("User not found - " + id));
+    public User updateUser(String id, User newUser) {
+        return userRepository.findById(Long.valueOf(id))
+            .map(user -> {
+                user.setFirstname(newUser.getFirstname());
+                user.setLastname(newUser.getLastname());
+                return userRepository.save(user);
+            })
+            .orElseGet(() -> {
+                newUser.setId(Long.valueOf(id));
+                return userRepository.save(newUser);
+            });
     }
 
     @Override
-    public User getUser(@NonNull String id) throws EntityNotFoundException {
-        Optional<User> user = userRepository.findById(Long.valueOf(id));
-        return user.orElseThrow(() -> new EntityNotFoundException("User not found - " + id));
+    public User getUser(@NonNull String id) throws UserNotFoundException {
+        return userRepository.findById(Long.valueOf(id))
+            .orElseThrow(() -> new UserNotFoundException(Long.valueOf(id)));
     }
 
     @Override
-    public void removeUser(String id) throws EntityNotFoundException {
-        userRepository.findById(Long.valueOf(id)).ifPresentOrElse(userRepository::delete, () ->
-                new EntityNotFoundException("User not found - " + id));
+    public void removeUser(String id) {
+        userRepository.deleteById(Long.valueOf(id));
     }
 
     @Override

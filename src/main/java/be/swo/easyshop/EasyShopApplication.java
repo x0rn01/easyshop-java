@@ -8,13 +8,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication
+@SpringBootApplication // component scanning, autoconfiguration, and property support
 public class EasyShopApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EasyShopApplication.class, args);
     }
 
+    // Spring Boot will run ALL CommandLineRunner beans once the application context is loaded.
     @Bean
     public CommandLineRunner commandLineRunner(UserRepository userDao) {
         return args -> {
