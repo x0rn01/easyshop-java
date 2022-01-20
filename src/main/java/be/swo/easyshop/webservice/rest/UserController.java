@@ -5,6 +5,8 @@ import be.swo.easyshop.service.user.UserService;
 import be.swo.easyshop.utils.assembler.UserModelAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,27 +47,37 @@ public class UserController {
 
     }
 
-    @GetMapping(path = "/firstname/{firstname}")
-    @Transactional(readOnly = true)
-    public List<User> findByFirstname(@PathVariable final String firstname) {
-        return userService.findByFirstname(firstname);
-    }
-
     @PostMapping (path = "/")
     @Transactional
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        EntityModel<User> entityModel = assembler.toModel(userService.createUser(user));
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
     }
 
     @PutMapping (path = "/{id}")
     @Transactional
-    public User updateUser(@PathVariable final String id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public ResponseEntity<?> updateUser(@PathVariable final String id, @RequestBody User user) {
+        EntityModel<User> entityModel = assembler.toModel(userService.updateUser(id, user));
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
     }
 
     @DeleteMapping (path = "/{id}")
-    public void removeUser(@PathVariable final String id) {
+    public ResponseEntity<?> removeUser(@PathVariable final String id) {
         userService.removeUser(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(path = "/firstname/{firstname}")
+    @Transactional(readOnly = true)
+    public List<User> findByFirstname(@PathVariable final String firstname) {
+        return userService.findByFirstname(firstname);
     }
 
 }
